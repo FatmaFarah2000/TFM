@@ -1,0 +1,11 @@
+Mejor configuración: config_muchos_chunks
+chunk_size=256
+top_k=5
+temperature=0.4
+Puntuación promedio: 0.6919
+Tiempo promedio: 32.56 segundos
+
+Métricas individuales:
+- faithfulness: 1.0000
+- context_precision: 0.2286
+- answer_relevancy: 0.8470

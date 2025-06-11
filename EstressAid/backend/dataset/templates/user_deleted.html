@@ -1,0 +1,32 @@
+<form onsubmit="return deleteUser(event);" style="display:inline;">
+    <input type="hidden" id="userId" value="{{ user.id }}">
+    
+    <button type="submit">
+        Delete
+    </button>
+</form>
+
+<script>
+function deleteUser(event) {
+    event.preventDefault();
+    const userId = document.getElementById('userId').value;
+    if (!confirm('Are you sure you want to delete this user?')) {
+        return;
+    }
+    
+    fetch(`/web/users/${userId}/delete`, {
+        method: 'DELETE',
+    })
+    .then(response => {
+        if (response.ok) {
+            window.location.href = '/web/users/';
+        } else {
+            alert('Error deleting user.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while deleting the user.');
+    });
+}
+</script>

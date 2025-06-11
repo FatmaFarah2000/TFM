@@ -1,0 +1,146 @@
+<!-- user_detail.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles del Usuario</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #eaf5f6; 
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center; 
+            align-items: center; 
+            color: #333;
+        }
+        .container {
+            background: white;
+            border-radius: 12px; 
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px; 
+            width: 100%;
+            max-width: 800px;
+            margin: auto;
+            display: flex;
+            flex-direction: column; 
+            gap: 20px; 
+        }
+        h1 {
+            color: #4A8C92; 
+            text-align: center;
+            font-size: 28px; 
+        }
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #4A8C92; 
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+        p {
+            margin: 10px 0;
+            font-size: 18px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 15px; 
+            padding: 15px;
+            border: 1px solid #ddd; 
+            border-radius: 6px;
+            background-color: #f9f9f9; 
+        }
+        .button-container {
+            
+            color: white;
+            text-align: center;
+            display: inline-block;
+            padding: 10px;
+            border-radius: 6px;
+            text-decoration: none;
+            width: 100%;
+            box-sizing: border-box;
+            margin-top: 10px;
+        }
+        button, .back-button {
+            background-color: #3B6C70; 
+            color: white;
+            text-align: center;
+            display: inline-block;
+            padding: 10px;
+            border-radius: 6px;
+            text-decoration: none;
+            width: 100%;
+            box-sizing: border-box;
+            margin-top: 10px;
+        }
+        button:hover, .back-button:hover {
+            background-color: #3B6C70;
+        }
+        .delete-button {
+            background-color: #e74c3c; 
+        }
+        .delete-button:hover {
+            background-color: #c0392b; 
+        }
+        .message {
+            text-align: center;
+            margin-top: 20px;
+            color: #f44336; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Detalles del Usuario</h1>
+        <div class="info-section">
+            <p><strong>Nombre:</strong> {{ user.name }}</p>
+            <p><strong>Apellido:</strong> {{ user.last_name }}</p>
+            <p><strong>Nombre de Usuario:</strong> {{ user.user_name }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Fecha de Nacimiento:</strong> {{ user.date_of_birth }}</p>
+            <p><strong>Género:</strong> {{ user.gender }}</p>
+        </div>
+        
+        <div class="button-container">
+            <a href="/web/users/{{ user.id }}/edit"><button>Editar Usuario</button></a>
+            <a href="/web/users/{{ user.id }}/conversation" class="back-button">Ver Conversaciones</a>
+            <a href="/web/users/" class="back-button">Volver a la lista de usuarios</a>
+            <form onsubmit="return deleteUser(event);" style="display:inline;">
+                <input type="hidden" id="userId" value="{{ user.id }}">
+                <button type="submit" class="delete-button">Eliminar Usuario</button>
+            </form>
+        </div>
+       
+    </div>
+
+    <script>
+        function deleteUser(event) {
+            event.preventDefault(); 
+            if (!confirm('¿Estás seguro de que deseas eliminar este usuario?')) {
+                return;
+            }
+            
+            const userId = document.getElementById('userId').value;            
+            fetch(`/web/users/${userId}/delete`, {
+                method: 'DELETE',
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/web/users/';
+                } else {
+                    alert('Error al eliminar el usuario.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Ocurrió un error al eliminar el usuario.');
+            });
+        }
+    </script>
+</body>
+</html>

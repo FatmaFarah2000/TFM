@@ -1,0 +1,170 @@
+<!-- create_user.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Usuario</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #e2f3f5 0%, #d9e4e8 100%);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 500px;
+        }
+        h1 {
+            text-align: center;
+            color: #4A8C92;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input[type="text"], input[type="email"], input[type="password"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        input[type="submit"] {
+            background-color: #4A8C92;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+        input[type="submit"]:hover {
+            background-color: #3B6C70; 
+        }
+        .back-button {
+            background-color: #3498db; 
+            color: white;
+            text-align: center;
+            display: inline-block;
+            padding: 10px;
+            border-radius: 6px;
+            text-decoration: none;
+            width: 100%;
+            box-sizing: border-box;
+            margin-top: 10px;
+        }
+        .back-button:hover {
+            background-color: #2980b9; 
+        }
+        .message {
+            text-align: center;
+            color: #f44336; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Crear Usuario</h1>
+        <form id="userForm">
+            <label for="name">Nombre:</label>
+            <input type="text" id="name" name="name" required>
+            
+            <label for="last_name">Apellido:</label>
+            <input type="text" id="last_name" name="last_name" required>
+
+            <label for="user_name">Nombre de usuario:</label>
+            <input type="text" id="user_name" name="user_name" required>
+
+            <label for="email">Correo electrónico:</label>
+            <input type="email" id="email" name="email" required>
+            
+            <label for="password">Contraseña:</label>
+            <input type="password" id="password" name="password" required>
+            
+            <label for="validate_password">Validar contraseña:</label>
+            <input type="password" id="validate_password" name="validate_password" required>
+
+            <label for="date_of_birth">Fecha de nacimiento:</label>
+            <input type="date" id="date_of_birth" name="date_of_birth" required>
+
+            <label>Género:</label>
+            <label><input type="radio" name="gender" value="Masculino" required> Masculino</label>
+            <label><input type="radio" name="gender" value="Femenino" required> Femenino</label>
+            <label><input type="radio" name="gender" value="Otro" required> Otro</label>
+
+            <input type="submit" value="Crear Usuario">
+            <div class="message" id="message"></div>
+        </form>
+
+        <a href="/web/users/" class="back-button">Volver a la Lista de Usuarios</a>
+    </div>
+
+    <script>
+        document.getElementById('userForm').addEventListener('submit', async (event) => {
+            event.preventDefault(); 
+            const name = document.getElementById('name').value;
+            const last_name = document.getElementById('last_name').value;
+            const user_name = document.getElementById('user_name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const validate_password = document.getElementById('validate_password').value;
+            const date_of_birth = document.getElementById('date_of_birth').value;
+            const gender = document.querySelector('input[name="gender"]:checked')?.value || '';
+            
+            const user = {
+                name: name,
+                last_name:last_name,
+                user_name:user_name ,
+                email: email,
+                password: password,
+                validate_password:validate_password,
+                date_of_birth:date_of_birth ,
+                gender:gender,
+            };
+
+            try {
+                const response = await fetch('/web/users/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',  
+                    },
+                    body: JSON.stringify(user)  
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Error en la creación del usuario');
+                }
+
+                const newUser = await response.json();
+                console.log('Usuario creado:', newUser);
+                window.location.href = "/web/users/"; 
+            } catch (error) {
+                console.error('Error:', error);
+                const messageDiv = document.getElementById('message');
+                messageDiv.innerText = 'Hubo un error al crear el usuario: ' + error.message;
+                messageDiv.style.color = '#f44336';  
+            }
+        });
+    </script>
+</body>
+</html>

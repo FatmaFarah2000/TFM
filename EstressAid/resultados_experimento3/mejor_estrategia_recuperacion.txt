@@ -1,0 +1,8 @@
+Mejor estrategia de recuperación: hibrido
+Puntuación promedio: 0.8207
+Tiempo promedio: 7.40 segundos
+
+Métricas individuales:
+- faithfulness: 0.8830
+- context_precision: 0.7804
+- answer_relevancy: 0.7986

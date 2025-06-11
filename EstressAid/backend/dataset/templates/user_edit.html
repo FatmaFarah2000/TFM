@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Perfil</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #e2f3f5 0%, #d9e4e8 100%);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; 
+            padding: 20px; 
+            color: #333;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 500px;
+        }
+        h1 {
+            text-align: center;
+            color: #4A8C92;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+        h2 {
+            color: #4A8C92;
+            font-size: 20px;
+            margin-top: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        label {
+            font-weight: bold;
+            color: #333;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="date"],
+        select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        .required-note {
+            font-size: 0.9em;
+            color: #555;
+            margin-top: 5px;
+        }
+        .password-section {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        .password-optional-note {
+            font-weight: bold;
+        }
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        button[type="submit"] {
+            background-color: #4A8C92;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button[type="submit"]:hover {
+            background-color: #3B6C70;
+        }
+        .back-button {
+            background-color: #f4f4f4;
+            color: #333;
+            text-decoration: none;
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+            border-radius: 6px;
+            display: block;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        .back-button:hover {
+            background-color: #ddd;
+        }
+        .message {
+            text-align: center;
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            display: none;
+        }
+        .message.success {
+            color: #155724;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+        .message.error {
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+        input[name="redirect_url"] { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Editar Perfil</h1>
+
+        <form id="edit-profile-form">
+            <input type="hidden" id="redirect_url" value="{{ redirect_url or '/web/users/' }}">
+            <input type="hidden" id="user_id" value="{{ user_id }}">
+
+            <h2>Datos del Perfil</h2>
+
+            <label for="name">Nombre:</label>
+            <input type="text" id="name" name="name" value="{{ user.name }}">
+
+            <label for="last_name">Apellido:</label>
+            <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}">
+
+            <label for="email">Correo Electrónico:</label>
+            <input type="email" id="email" name="email" value="{{ user.email }}">
+
+            <label for="date_of_birth">Fecha de Nacimiento:</label>
+            <input type="date" id="date_of_birth" name="date_of_birth" value="{{ user.date_of_birth }}">
+
+            <label for="gender">Género:</label>
+            <select id="gender" name="gender">
+                <option value="">{{ user.gender }}</option>
+                <option value="Masculino" {% if user.gender == 'Masculino' %}selected{% endif %}>Masculino</option>
+                <option value="Feminino" {% if user.gender == 'Feminino' %}selected{% endif %}>Femenino</option>
+                <option value="Otro" {% if user.gender == 'Otro' %}selected{% endif %}>Otro</option>
+            </select>
+            
+
+            <div class="password-section">
+                <h2>Cambiar Contraseña (Opcional)</h2>
+                <p class="required-note">Rellena estos campos <span class="password-optional-note">solo si deseas cambiar tu contraseña</span>. Deberás proporcionar tu contraseña actual.</p>
+
+                <label for="password">Contraseña Actual:</label>
+                <input type="password" id="password" name="password">
+                <p class="required-note">Necesaria solo si vas a establecer una nueva contraseña.</p>
+
+                <label for="new_password">Nueva Contraseña:</label>
+                <input type="password" id="new_password" name="new_password">
+                <p class="required-note">Deja en blanco si no quieres cambiar la contraseña.</p>
+            </div>
+
+            <div class="message" id="message"></div>
+
+            <div class="button-group">
+                <button type="submit">Guardar Cambios</button>
+            </div>
+        </form>
+        <a href="{{ redirect_url or '/web/users/' }}" class="back-button">Cancelar</a>
+    </div>
+
+    <script>
+        document.getElementById('edit-profile-form').addEventListener('submit', async (event) => {
+            event.preventDefault(); 
+
+            const messageDiv = document.getElementById('message');
+            messageDiv.style.display = 'none'; 
+            messageDiv.className = 'message'; 
+
+            const userId = document.getElementById('user_id').value;
+            const name = document.getElementById('name').value || null;
+            const lastName = document.getElementById('last_name').value || null;
+            const email = document.getElementById('email').value || null;
+            const dateOfBirth = document.getElementById('date_of_birth').value || null;
+            const genderValue = document.getElementById('gender').value;
+            if (genderValue) updateData.gender = genderValue;
+
+            const currentPassword = document.getElementById('password').value || null;
+            const newPassword = document.getElementById('new_password').value || null;
+            const redirectUrl = document.getElementById('redirect_url').value;
+
+           
+            const updateData = {
+                name: name,
+                last_name: lastName,
+                email: email,
+                date_of_birth: dateOfBirth,
+                gender: gender,
+            };
+
+            if (newPassword) {
+                updateData.password = currentPassword;
+                updateData.new_password = newPassword;
+            } else if (currentPassword) {
+                 
+            }
+            const url = `/web/users/${userId}/edit`; 
+
+            try {
+                const response = await fetch(url, {
+                    method: 'PUT', 
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(updateData) 
+                });
+
+                const result = await response.json(); 
+
+                if (!response.ok) {
+                    throw new Error(result.detail || `Error ${response.status}`);
+                }
+
+                
+                messageDiv.textContent = 'Perfil actualizado correctamente.';
+                messageDiv.className = 'message success';
+                messageDiv.style.display = 'block';
+
+                setTimeout(() => {
+                    window.location.href = redirectUrl; 
+                }, 1500);
+            } catch (error) {
+                console.error('Error al actualizar perfil:', error);
+                messageDiv.textContent = `Error: ${error.message}`;
+                messageDiv.className = 'message error';
+                messageDiv.style.display = 'block';
+            }
+        });
+    </script>
+
+</body>
+</html>
+
